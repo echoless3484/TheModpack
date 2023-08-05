@@ -1,0 +1,173 @@
+const float pi = 3.14159265;
+const float underwater_fog_density = 0.035;
+
+vec3 world_pos_from_depth(mat4 mat_view_proj_inverse, vec2 coords, float depth)
+{
+	vec4 view_position = vec4(coords, depth, 1.0);
+
+	// transform into [-1, 1] range, and unproject
+	view_position = mat_view_proj_inverse * ((view_position * 2.0) - 1.0);
+
+	// scale so w == 1
+	view_position /= view_position.w;
+
+	return view_position.xyz;
+}
+
+vec3 fresnel(vec3 spec_color, float intensity)
+{
+    // Schlick fresnel approximation
+    return spec_color + (vec3(1) - spec_color) * pow((1.0 - intensity), 5);
+}
+
+// GGX / Trowbridge-Reitz
+// [Walter et al. 2007, "Microfacet models for refraction through rough surfaces"]
+float ndf_ggx(float roughness, float n_dot_h)
+{
+	float a = roughness * roughness;
+	float a2 = a * a;
+	float d = (n_dot_h * a2 - n_dot_h) * n_dot_h + 1.0;
+	return a2 / (pi * d * d);
+}
+
+// Anisotropic GGx
+// [Burley 2012, "Physically-Based Shading at Disney"]
+float ndf_ggx_aniso(float roughness_x, float roughness_y, float n_dot_h, vec3 h, vec3 x, vec3 y )
+{
+	float ax = roughness_x * roughness_x;
+	float ay = roughness_y * roughness_y;
+	float xoh = dot( x, h );
+	float yoh = dot( y, h );
+	float d = xoh*xoh / (ax*ax) + yoh*yoh / (ay*ay) + n_dot_h*n_dot_h;
+	return 1.0 / ( pi * ax*ay * d*d );
+}
+
+// Geometry factor divided by the foreshortening term:
+// G(l, v, h) / (n . l)(n . v)
+float visibility_term()
+{
+    return 1.0;
+}
+
+// Bidirectional Reflectance Distribution Function
+vec3 brdf_specular(vec3 light_color, vec3 spec_color, float roughness, float l_dot_n, float l_dot_h, float n_dot_h)
+{
+    vec3 f = fresnel(spec_color, l_dot_h);
+    float v = visibility_term();
+    float d = ndf_ggx(roughness, n_dot_h);
+
+    // Equivalent to:
+    // pi * ((F() * G() * D()) / 4(n . l)(n . v))
+    // Because v = G() / (n . l)(n . v)
+    // And D() includes multiplication of pi/4
+    return (f * v * d) * (light_color * l_dot_n);
+}
+
+vec3 lambert_diffuse(vec3 light_color, vec3 albedo)
+{
+    return light_color * albedo / pi;
+}
+
+vec3 brdf_diffuse(vec3 light_color, vec3 albedo, float roughness, float l_dot_n, float v_dot_n, float l_dot_h)
+{
+    return lambert_diffuse(light_color, albedo);
+}
+
+vec3 brdf(vec3 light_color, vec3 light_direction, vec3 albedo, vec3 spec_color, vec3 normal, vec3 eye, float roughness, float specular_factor)
+{
+    vec3 half_vec = normalize(-eye - light_direction);
+
+    float l_dot_n = max(0.0, -dot(light_direction, normal));
+    float l_dot_h = max(0.0, -dot(light_direction, half_vec));
+    float n_dot_h = max(0.0, dot(normal, half_vec));
+    float v_dot_n = max(0.0, -dot(eye, normal));
+
+	vec3 diffuse = brdf_diffuse(light_color, albedo, roughness, l_dot_n, v_dot_n, l_dot_h);
+    vec3 specular = brdf_specular(light_color, spec_color, roughness, l_dot_n, l_dot_h, n_dot_h) * specular_factor;
+
+    return pi * (diffuse + specular);
+}
+
+vec3 apply_fog(vec3 surface_color, vec3 fog_color, vec3 water_fog_color, float fog_density, float distance_to_fragment, float distance_to_water, float water_depth, float noise_value, int is_below_water, float water_fog_offset)
+{
+    float random_value = noise_value / 511.0;
+
+    if(is_below_water == 1)
+    {
+        float water_distance = min(distance_to_fragment, distance_to_water);
+        float air_distance = max(distance_to_fragment - distance_to_water, 0.0);
+
+        float depth_factor = 1.0 / exp(air_distance * fog_density);
+        depth_factor += random_value;
+        depth_factor = clamp(depth_factor, 0.0, 1.0);
+        
+        float water_depth_factor = 1.1 - (1 / water_distance);
+        water_depth_factor += random_value;
+        water_depth_factor = clamp(water_depth_factor, 0.9, 1.0);
+
+        return mix(mix(fog_color, surface_color, depth_factor), water_fog_color, water_depth_factor);
+    }
+    else
+    {
+        float air_distance   = min(distance_to_fragment, distance_to_water);
+        float water_distance = max(distance_to_fragment - distance_to_water - 0.1, 0);
+	float water_limit = 1;	
+
+        if(water_distance > 0.0)
+        {
+	    water_limit = 0.1;
+	}
+
+        float depth_factor = 1.0 / exp(air_distance * fog_density);
+        depth_factor += random_value;
+        depth_factor = clamp(depth_factor, 0.0, 1.0);
+        
+        float water_depth_factor = 1 - pow(water_distance / 10, 0.1) + water_limit;
+	water_depth_factor += random_value;
+        water_depth_factor = clamp(water_depth_factor, 0, water_limit);
+
+        //return mix(vec3(1,0,0), vec3(0,0,0), water_depth_factor); 
+	return mix(fog_color, mix(water_fog_color, surface_color, water_depth_factor), depth_factor);
+    }
+}
+
+float get_fog_contribution(float fog_density, float distance_to_fragment, float distance_to_water, float water_depth, float noise_value, int is_below_water, float water_fog_offset)
+{
+    float random_value = noise_value / 511.0;
+
+    if(is_below_water == 1)
+    {
+        float water_distance = min(distance_to_fragment, distance_to_water) + water_fog_offset;
+        float air_distance = max(distance_to_fragment - distance_to_water, 0.0);
+
+        float depth_factor = 1.0 / exp(air_distance * fog_density);
+        depth_factor += random_value;
+        depth_factor = clamp(depth_factor, 0.0, 1.0);
+        
+        float water_depth_factor = 1.0 / exp(water_distance * underwater_fog_density * 0.5);
+        water_depth_factor += random_value;
+        water_depth_factor = clamp(water_depth_factor, 0.0, 1.0);
+
+        return depth_factor * water_depth_factor;
+    }
+    else
+    {
+        float air_distance = min(distance_to_fragment, distance_to_water);
+        float water_distance = max(distance_to_fragment - distance_to_water - 0.1, 0.0);
+
+        if(water_distance > 0.0)
+        {
+            water_distance += water_fog_offset;
+        }
+
+        float depth_factor = 1.0 / exp(air_distance * fog_density);
+        depth_factor += random_value;
+        depth_factor = clamp(depth_factor, 0.0, 1.0);
+        
+        float water_depth_factor = 1.0 / exp(water_distance * underwater_fog_density);
+        water_depth_factor += random_value;
+        water_depth_factor = clamp(water_depth_factor, 0.0, 1.0);
+
+        return depth_factor * water_depth_factor;
+    }
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition lifetime="0.5" lifetime_variation="0.0" spawn_magnitude="1" velocity_damping="0.98" wind_factor="0.0" scale_start="1" scale_end="0.5" is_dissolve="true">
+	<velocity_base x="0.001" y="0.1" z="0.001" />
+	<velocity_variation x="0.01" y="0.05" z="0.01" />
+	<velocity_acceleration x="0" y="-0.005" z="0" />
+	<color_start r="200" g="200" b="200" a="255" />
+	<color_end r="200" g="200" b="200" a="255" />
+	<color_variation r="0" g="0" b="0" a="0" />
+</definition>
