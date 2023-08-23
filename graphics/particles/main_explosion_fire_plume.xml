@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition lifetime="3" spawn_magnitude="5" velocity_damping="0.95" wind_factor="0.01" scale_start="1" scale_end="5" is_fire="true">
+	<velocity_base x="0" y="0" z="0.1" />
+	<velocity_variation x="0.01" y="0.01" z="0.01" />
+	<velocity_acceleration x="0" y="0.001" z="0" />
+	<color_start r="7" g="7" b="7" a="255" />
+	<color_end r="7" g="7" b="7" a="0" />
+	<color_variation r="0" g="0" b="0" a="2" />
+</definition>
+<!--Modded by Rowan-->
