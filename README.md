@@ -13,7 +13,7 @@ Thank you so much for using The Modpack, it means the world to me! If you'd like
 https://hellowmedia.com/discord﻿
 
 Mirrors
-﻿﻿[GitHub Repository](https://github.com/echoless3484/TheModpack/tree/main)
-﻿﻿﻿﻿[NEXUSMODS](https://www.nexusmods.com/stormworksbuildandrescue/mods/32)
-﻿﻿﻿﻿[StormLoader](https://github.com/Lewinator56/StormLoader)
+[GitHub Repository](https://github.com/echoless3484/TheModpack/tree/main)
+[NEXUSMODS](https://www.nexusmods.com/stormworksbuildandrescue/mods/32)
+[StormLoader](https://github.com/Lewinator56/StormLoader)
 Ok, the end now, thank you!
