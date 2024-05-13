@@ -12,7 +12,7 @@ The End
 Thank you so much for using The Modpack, it means the world to me! If you'd like to support me, please join my Discord server below
 https://hellowmedia.com/discord﻿
 
-Mirrors:
+Mirrors & StormLoader:
 [GitHub Repository](https://github.com/echoless3484/TheModpack/tree/main)
 [NEXUSMODS](https://www.nexusmods.com/stormworksbuildandrescue/mods/32)
 [StormLoader](https://github.com/Lewinator56/StormLoader)
