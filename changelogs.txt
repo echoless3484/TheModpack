@@ -1,10 +1,15 @@
-Changelogs in from 1.6.2 to 1.7.0
--Made underwater explosion particle much better at @Gladius' request
--Shrunk normal explosions until their main particle radius matched the damage radius caused to blocks
--Fixed the high-pitch bug with the damage sound, now its the Steve we all know and love
--Made normal exhaust match the characteristics as the coal exhaust so it looks less weird when boilers are reaching temp
--Added No Workshop Templates courtesy of @toastery
--Added Toastery's Modified Sounds courtesy of @toastery
--Migrated to Echo's Workbenches+ Experimental Branch
--Changed Description
--Changed Modmeta.xml
+Changelogs in from 1.7.0 to v8-beta1
+-Updated Rowan's Modpack from version 1.6 to 1.10
+-Remade ALL workbench edits to prevent crashes, includes many changes to the workflow which let me edit the positions of each workbench edit area and more.
+
+Rowan's Modpack Changelogs from 1.6 to 1.10
+-Modded Spotlight Beam Length (3x3 Spotlight) Credit @AegiusX3
+-Changed All Exhaust Smoke to Black
+-MG ammo boxes hold 250 rounds now
+-Small searchlights (Mounted) have a wider FOV and longer range
+-Reduced fog to 25% (Weather fog still works)
+-Did some minor edits to water, still not happy with it but it is getting there
+-Removed old black smoke and returned grey smoke to grey
+-Reduced the size of current black smoke slightly
+-Messed with sounds
+-Added SWC's models for WW2-era flashlight, binoculars, med-kit, and defibrillator

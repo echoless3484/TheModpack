@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="Small Spotlight (Mounted)" category="4" type="10" mass="1" value="20" flags="2281963520" mesh_data_name="meshes/component_spotlight_small_mounted.mesh" mesh_0_name="meshes/component_spotlight_small_mounted_dynamic.mesh" mesh_1_name="meshes/component_spotlight_small_mounted_add.mesh" mesh_editor_only_name="meshes/arrow_spotlight_mounted_gimbal.mesh" constraint_axis="1" cable_length="16" buoy_radius="1" buoy_factor="1" buoy_force="100" force_emitter_max_force="1000" force_emitter_max_vector="1" engine_max_force="1000" wheel_radius="0.25" light_intensity="1" light_range="120" light_ies_map="graphics/ies/ies_default.txtr" light_fov="1.483530" light_type="1" rudder_surface_area="0">
+	<tooltip_properties description="It has a range of 60m. Can be pivoted up to 0.125 turns using composite input." short_description="A small spotlight that can be controlled using an on/off signal."/>
+	<sfx_datas/>
+	<surfaces>
+		<surface orientation="3">
+			<position/>
+		</surface>
+	</surfaces>
+	<buoyancy_surfaces/>
+	<logic_nodes>
+		<logic_node label="Light Switch" mode="1" description="Controls whether or not the light is switched on.">
+			<position/>
+		</logic_node>
+		<logic_node label="Electric" mode="1" type="4" description="Electrical power connection.">
+			<position/>
+		</logic_node>
+		<logic_node label="Pivot" mode="1" type="5" description="Inputs for spotlight X/Y pivot. (Value 1 : Pivot X) (Value 2 : Pivot Y)">
+			<position/>
+		</logic_node>
+	</logic_nodes>
+	<couplings/>
+	<voxels>
+		<voxel flags="1">
+			<position/>
+			<physics_shape_rotation/>
+		</voxel>
+	</voxels>
+	<voxel_min/>
+	<voxel_max/>
+	<voxel_physics_min/>
+	<voxel_physics_max/>
+	<bb_physics_min/>
+	<bb_physics_max/>
+	<compartment_sample_pos y="1"/>
+	<constraint_pos_parent/>
+	<constraint_pos_child/>
+	<voxel_location_child/>
+	<seat_offset/>
+	<seat_front/>
+	<seat_up/>
+	<seat_camera/>
+	<seat_render/>
+	<force_dir/>
+	<light_position x="1"/>
+	<light_color x="1" y="1" z="1"/>
+	<light_forward x="1" y="0"/>
+	<door_size x="1" y="1" z="1"/>
+	<door_normal/>
+	<door_side/>
+	<door_up/>
+	<door_base_pos/>
+	<dynamic_body_position/>
+	<dynamic_rotation_axes y="1"/>
+	<dynamic_side_axis x="1"/>
+	<magnet_offset/>
+	<connector_axis/>
+	<connector_up/>
+	<jet_engine_connections_prev/>
+	<jet_engine_connections_next/>
+	<particle_direction/>
+	<particle_offset/>
+	<particle_bounds/>
+	<rope_hook_offset/>
+</definition>
+

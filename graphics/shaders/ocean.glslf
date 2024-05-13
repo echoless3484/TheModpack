@@ -9,9 +9,13 @@ flat in vec3 normal_out;
 flat in vec3 view_normal_out;
 
 uniform vec3 camera_position;
-uniform vec3 light_direction;
-uniform vec3 light_color;
-uniform float light_intensity_global;
+
+uniform vec3 sun_light_direction;
+uniform vec3 sun_light_color;
+uniform float sun_light_intensity;
+uniform vec3 moon_light_direction;
+uniform vec3 moon_light_color;
+uniform float moon_light_intensity;
 
 uniform vec3 sky_color_horizon;
 uniform vec3 sky_color_zenith;
@@ -73,7 +77,7 @@ void swap(inout float a, inout float b) {
 float fresnel(float spec_color, float intensity)
 {
     // Schlick fresnel approximation
-    return spec_color + (1.0 - spec_color) * pow((1.0 - intensity), 5);
+    return (spec_color + (1.0 - spec_color) * pow((1.0 - intensity), 5)) * intensity * 6; //spec_color + (1.0 - spec_color) * pow((1.0 - intensity), 5);
 }
 
 vec3 sky_color(vec3 normal)
@@ -428,11 +432,15 @@ void main()
 
 	vec3 spec = vec3(0);
 	{
-		float shininess = 35.0;
+		float shininess = 50.0;
 
-        vec3 half_vec = normalize(eye - light_direction);
+        vec3 half_vec = normalize(eye - sun_light_direction);
         float spec_term = max(0.0, abs(dot(unscaled_normal, half_vec)));
-		spec = light_color * pow(spec_term, shininess) * 30;
+		spec += sun_light_color * min(sun_light_intensity * 5.0, 1.0) * pow(spec_term, shininess) * 30;
+
+        half_vec = normalize(eye - moon_light_direction);
+        spec_term = max(0.0, abs(dot(unscaled_normal, half_vec)));
+		spec += moon_light_color * moon_light_intensity * pow(spec_term, shininess) * 30;
 	}
 
     reflected_color += spec;
@@ -504,18 +512,18 @@ void main()
     {
         // Scale up specular so we can see the surface better when underwater
         refracted_color.rgb += spec * 2.8;
- 	
+ 
         const float water_fog_offset = 50.0;
-        float water_depth_factor = clamp((1 / camera_to_fragment_length), 0, 1);
+        float water_depth_factor = clamp(1.0 / exp((camera_to_fragment_length + (water_fog_offset * 0.5)) * underwater_fog_density * 0.25), 0.0, 1.0);
 
         color = mix(underwater_color, mix(refracted_color.rgb, reflected_color.rgb, fres), water_depth_factor);
     }
     else
     {
         vec3 fog_color = sky_color(camera_to_fragment / camera_to_fragment_length);
-        float water_depth_factor = clamp(1.0 / exp(camera_to_fragment_length * fog_density), 0.0, 1.0);
+        float water_depth_factor = clamp(1.0 / exp(camera_to_fragment_length * fog_density * 0.1), 0.0, 1.0);
 
-        color = mix(fog_color, mix(refracted_color.rgb, reflected_color.rgb, fres) / 2, water_depth_factor);
+        color = mix(fog_color, mix(refracted_color.rgb, reflected_color.rgb, fres), water_depth_factor);
     }
 
     //Ash
