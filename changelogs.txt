@@ -1,4 +1,4 @@
-Changelogs in from 1.7.0 to v8-beta1
+Changelogs in from 1.7.0 to v8
 -Updated Rowan's Modpack from version 1.6 to 1.10
 -Remade ALL workbench edits to prevent crashes, includes many changes to the workflow which let me edit the positions of each workbench edit area and more.
 
